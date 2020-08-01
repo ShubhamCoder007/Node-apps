@@ -1,0 +1,17 @@
+<!DOCTYPE html> 
+
+<html>
+
+<title>Help page</title>
+
+<head>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+    <h1>Help Page!</h1>
+    <p> How may I help you? </p>
+    <p>Created by Shubham Banerjee</p>
+</body>
+
+</html>
