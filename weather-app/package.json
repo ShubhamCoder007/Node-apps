@@ -1,0 +1,19 @@
+{
+  "name": "weather-app",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.88.2",
+    "require": "^2.4.20",
+    "uglify-js": "^3.10.0",
+    "yargs": "^15.4.1"
+  },
+  "devDependencies": {},
+  "description": ""
+}
