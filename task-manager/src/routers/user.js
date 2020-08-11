@@ -1,6 +1,7 @@
 const express = require('express')
 const router = new express.Router()
 const User = require('../db/models/user')
+const { update } = require('../db/models/user')
 
 router.post('/users', (req, res) => {
     const user = new User(req.body)
@@ -33,6 +34,9 @@ router.get('/users/:id', (req, res) => {
     })
 })
 
+
+
+
 //updating the user data
 router.patch('/users/:id', async (req, res) => {
     const updates = Object.keys(req.body)
@@ -44,7 +48,9 @@ router.patch('/users/:id', async (req, res) => {
     }
 
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true})
+        // const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true})
+        const user = await User.findById(req.params.id)
+        updates.forEach(update => user[update] = req.body[update])
 
         if (!user) {
             return res.status(404).send()
