@@ -1,6 +1,7 @@
 const validator = require('validator')
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 const userSchema = mongoose.Schema({
     name: {
@@ -9,6 +10,7 @@ const userSchema = mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true,
         required: true,
         trim: true,
         lowerCase: true,
@@ -37,10 +39,47 @@ const userSchema = mongoose.Schema({
                 throw new Error('Age cannot be negative')
             }
         }
-    }
+    },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 })
 
 
+//creating instance method
+userSchema.methods.getToken = async function () {
+    const token = await jwt.sign({_id: this._id.toString()}, 'developedbyshubhambanerjee')
+    this.tokens = this.tokens.concat({ token })
+    await this.save()
+
+    return token
+}
+
+
+//creating findByCredentials custom method to find user by valid credentials
+userSchema.statics.findByCredentials = async (email, password) => {
+    const user = await User.findOne({ email })
+
+    if (!user) {
+        throw new Error('Unable to login, the email doesnot exist!')
+    }
+
+    //verify the password
+    const isValid = await bcrypt.compare(password, user.password)
+
+    if (!isValid) {
+        throw new Error('Unable to login, Invalid password!')
+    }
+
+    return user
+}
+
+
+
+//hashing the password before saving
 userSchema.pre('save', async function(next) {
     const user = this
 
@@ -52,6 +91,6 @@ userSchema.pre('save', async function(next) {
 })
 
 
-const user = mongoose.model('user', userSchema)
+const User = mongoose.model('user', userSchema)
 
-module.exports = user
+module.exports = User

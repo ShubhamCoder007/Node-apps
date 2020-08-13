@@ -2,23 +2,20 @@ const express = require('express')
 const router = new express.Router()
 const User = require('../db/models/user')
 const { update } = require('../db/models/user')
+const Auth = require('../middleware/Authentication')
 
 router.post('/users', (req, res) => {
     const user = new User(req.body)
 
     user.save().then(() => {
         res.status(201).send(user)
-    }).then(reject => {
-        res.status(400).send(reject)
+    }).catch(e => {
+        res.status(400).send(e)
     })
 })
 
-router.get('/users', (req, res) => {
-    User.find({}).then(users => {
-        res.send(users)
-    }).catch(error => {
-        res.status(500).send(error)
-    })
+router.get('/users/me', Auth, (req, res) => {
+    res.send(req.user)
 })
 
 router.get('/users/:id', (req, res) => {
@@ -35,6 +32,25 @@ router.get('/users/:id', (req, res) => {
 })
 
 
+router.post('/users/login', async (req, res) => {
+    try {
+        const user = await User.findByCredentials(req.body.email, req.body.password)
+        const token = await user.getToken()
+        res.send({user, token})
+    } catch (e) {
+        console.log(e)
+        res.status(400).send(e)
+    }
+})
+
+
+router.post('/users/signup', async (req, res) => {
+    const user = new User(req.body)
+    const token = await user.getToken()
+    await user.save()
+
+    res.send({user, token})
+})
 
 
 //updating the user data
