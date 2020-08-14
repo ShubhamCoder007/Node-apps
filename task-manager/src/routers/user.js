@@ -43,6 +43,32 @@ router.post('/users/login', async (req, res) => {
     }
 })
 
+router.post('/users/logout', Auth, async (req, res) => {
+    try {
+        req.user.tokens = req.user.tokens.filter(token => {
+            return !token.token === req.tokens
+        })
+        await req.user.save()
+        res.send()
+    } catch (e) {
+        res.status(500).send()
+    }
+})
+
+
+router.post('/users/logoutAll', Auth, async (req, res) => {
+    try {
+        // do{
+        //     req.user.tokens.pop()
+        // } while (req.user.tokens.length != 0)
+        req.user.tokens = []
+        await req.user.save()
+
+        res.status(200).send()
+    } catch (e) {
+        res.status(500).send()
+    }
+})
 
 router.post('/users/signup', async (req, res) => {
     const user = new User(req.body)
