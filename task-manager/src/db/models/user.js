@@ -2,6 +2,7 @@ const validator = require('validator')
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const Task = require('./task')
 
 const userSchema = mongoose.Schema({
     name: {
@@ -49,6 +50,16 @@ const userSchema = mongoose.Schema({
 })
 
 
+//Hiding the private datas
+userSchema.methods.toJSON = function () {
+    const userObj = this.toObject()
+
+    delete userObj.password
+    delete userObj.tokens
+
+    return userObj
+}
+
 //creating instance method
 userSchema.methods.getToken = async function () {
     const token = await jwt.sign({_id: this._id.toString()}, 'developedbyshubhambanerjee')
@@ -87,6 +98,12 @@ userSchema.pre('save', async function(next) {
         user.password = await bcrypt.hash(user.password, 8)
     }
 
+    next()
+})
+
+//runs this middleware before deleting the user to remove all tasks
+userSchema.pre('remove', async function(next) {
+    await Task.deleteMany({owner: this._id})
     next()
 })
 

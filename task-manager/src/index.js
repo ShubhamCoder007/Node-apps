@@ -28,3 +28,13 @@ app.use(taskRouter)
 app.listen(port, () => {
     console.log('Listening on ',port)
 })
+
+
+// const main = async () => {
+//     const task = await Task.findById('5f392bee3fd3314f04879ece')
+//     // console.log(await User.findById(task.owner).then(u => console.log(u.name)))
+//     await task.populate('owner').execPopulate()
+//     console.log(task.owner.name)
+// }
+
+// main()
