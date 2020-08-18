@@ -24,11 +24,23 @@ router.post('/task', auth, async (req, res) => {
 })
 
 //reading all the tasks
+//getting the task based on completed filtering
+//if no query is provided then all tasks are returned
 router.get('/tasks', Auth, async (req, res) => {
+    const match = {}
+
+    if(req.query.completed) {
+        //string to be converted to boolean
+        match.completed = req.query.completed === 'true'
+    }
+
     try {
          //using the populate aproach which will temporarily store in virtual space
-        // await req.user.populate('tasks').execPopulate()
-        const tasks = await Task.find({ owner: req.user._id })
+        await req.user.populate({
+            path: 'tasks',
+            match
+        }).execPopulate()
+        // const tasks = await Task.find({ owner: req.user._id })
         res.send(tasks)
     } catch (e) {
         res.status(500).send(e)

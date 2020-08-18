@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const Task = require('./task')
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
     name: {
         type: 'string',
         trim: true
@@ -47,8 +47,17 @@ const userSchema = mongoose.Schema({
             required: true
         }
     }]
+}, {
+    timeStamps: true
 })
 
+
+//virtual field
+userSchema.virtual('tasks', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'owner'
+})
 
 //Hiding the private datas
 userSchema.methods.toJSON = function () {
